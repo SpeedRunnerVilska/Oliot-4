@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Pankki-luokka</title>
+</head>
+<body>
+    <h1>Villen Pankkitili Demo</h1>
+    <div id="tiedot"></div>
+    <script>
+        class Pankki {
+            constructor(tilinumero) {
+                this.tilinumero = tilinumero;
+                this.saldo = 0;
+                this.historia = [];
+            }
+
+            talleta(summa) {
+                if (summa <= 0) return;
+                const saldoEnnen = this.saldo;
+                this.saldo += summa;
+                this.historia.push({
+                    paivamaara: new Date(),
+                    tapahtuma: "Talletus",
+                    summa: summa,
+                    saldoEnnen: saldoEnnen
+                });
+            }
+
+            nosta(summa) {
+                if (summa <= 0 || summa > this.saldo) return;
+                const saldoEnnen = this.saldo;
+                this.saldo -= summa;
+                this.historia.push({
+                    paivamaara: new Date(),
+                    tapahtuma: "Nosto",
+                    summa: summa,
+                    saldoEnnen: saldoEnnen
+                });
+            }
+
+            naytaTiedot(elementId = "tiedot") {
+                const el = document.getElementById(elementId);
+                el.innerHTML = `
+                    <h2>Tilinumero: ${this.tilinumero}</h2>
+                    <p>Saldo: ${this.saldo} €</p>
+                    <h3>Tapahtumahistoria:</h3>
+                    ${this.historia.length === 0 ? "<p>Ei tapahtumia.</p>" : `
+                        <ul>
+                            ${this.historia.map(tapahtuma => `
+                                <li>
+                                    ${tapahtuma.paivamaara.toLocaleString()} - 
+                                    ${tapahtuma.tapahtuma}: ${tapahtuma.summa} € 
+                                    (Saldo ennen: ${tapahtuma.saldoEnnen} €)
+                                </li>
+                            `).join("")}
+                        </ul>
+                    `}
+                `;
+            }
+
+            naytaHistoria(elementId = "tiedot") {
+                const el = document.getElementById(elementId);
+                el.innerHTML = `
+                    <h3>Tapahtumahistoria:</h3>
+                    ${this.historia.length === 0 ? "<p>Ei tapahtumia.</p>" : `
+                        <ul>
+                            ${this.historia.map(tapahtuma => `
+                                <li>
+                                    ${tapahtuma.paivamaara.toLocaleString()} - 
+                                    ${tapahtuma.tapahtuma}: ${tapahtuma.summa} € 
+                                    (Saldo ennen: ${tapahtuma.saldoEnnen} €)
+                                </li>
+                            `).join("")}
+                        </ul>
+                    `}
+                `;
+            }
+        }
+
+        // TILI NUMERO JA HISTORIA //
+        const tili = new Pankki("FI82 8125 5218 33");
+        tili.talleta(100);
+        tili.nosta(30);
+        tili.talleta(50);
+        tili.naytaTiedot();
+    </script>
+</body>
+</html>
